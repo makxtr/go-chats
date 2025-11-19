@@ -1,4 +1,4 @@
-.PHONY: help run-auth run-chat grpcui-auth grpcui-chat infra-up infra-down infra-logs
+.PHONY: help run-auth run-chat grpcui-auth grpcui-chat grpcui-auth-prod grpcui-chat-prod infra-up infra-down infra-logs
 
 run-auth:
 	@echo "Starting auth service..."
@@ -13,6 +13,12 @@ grpcui-auth:
 
 grpcui-chat:
 	@cd chat-server && export $$(grep -v '^#' local.env | xargs) && grpcui -plaintext $$GRPC_HOST:$$GRPC_PORT
+
+grpcui-auth-prod:
+	grpcui -plaintext auth-service-rxpqkfxb3a-uc.a.run.app:443
+
+grpcui-chat-prod:
+	grpcui -plaintext chat-service-rxpqkfxb3a-uc.a.run.app:443
 
 infra-up:
 	docker-compose up -d

@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	grpcHostEnvName = "GRPC_HOST"
-	grpcPortEnvName = "GRPC_PORT"
+	grpcHostEnvName  = "GRPC_HOST"
+	grpcPortEnvName  = "GRPC_PORT"
+	cloudPortEnvName = "PORT"
 )
 
 type GRPCConfig interface {
@@ -27,9 +28,12 @@ func NewGRPCConfig() (GRPCConfig, error) {
 		return nil, errors.New("grpc host not found")
 	}
 
-	port := os.Getenv(grpcPortEnvName)
+	port := os.Getenv(cloudPortEnvName)
 	if len(port) == 0 {
-		return nil, errors.New("grpc port not found")
+		port = os.Getenv(grpcPortEnvName)
+		if len(port) == 0 {
+			return nil, errors.New("grpc port not found")
+		}
 	}
 
 	return &grpcConfig{

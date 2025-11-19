@@ -29,7 +29,6 @@ steps:
       - "--platform=managed"
       - "--allow-unauthenticated"
       - "--use-http2"
-      - "--port=50051"
 
 # Store images in Artifact Registry
 images:
