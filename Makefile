@@ -15,10 +15,10 @@ grpcui-chat:
 	@cd chat-server && export $$(grep -v '^#' local.env | xargs) && grpcui -plaintext $$GRPC_HOST:$$GRPC_PORT
 
 grpcui-auth-prod:
-	grpcui -plaintext auth-service-rxpqkfxb3a-uc.a.run.app:443
+	grpcui auth-service-rxpqkfxb3a-uc.a.run.app:443
 
 grpcui-chat-prod:
-	grpcui -plaintext chat-service-rxpqkfxb3a-uc.a.run.app:443
+	grpcui chat-service-rxpqkfxb3a-uc.a.run.app:443
 
 infra-up:
 	docker-compose up -d
