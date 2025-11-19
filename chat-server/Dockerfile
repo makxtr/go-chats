@@ -23,8 +23,11 @@ WORKDIR /root/
 # Copy the binary from builder
 COPY --from=builder /app/server .
 
+# Copy production env file
+COPY prod.env .
+
 # Expose the gRPC port
 EXPOSE 50052
 
-# Run the server
-CMD ["./server"]
+# Run the server with prod.env by default
+CMD ["./server", "-config-path=prod.env"]

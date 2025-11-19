@@ -1,0 +1,26 @@
+version: "3.8"
+
+volumes:
+  postgres_auth_data:
+  postgres_chat_data:
+
+services:
+  postgres-auth:
+    image: postgres:15-alpine
+    container_name: go-chats-postgres-auth
+    env_file:
+      - ./auth/local.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+
+  postgres-chat:
+    image: postgres:15-alpine
+    container_name: go-chats-postgres-chat
+    env_file:
+      - ./chat-server/local.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_chat_data:/var/lib/postgresql/data
