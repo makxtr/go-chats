@@ -28,3 +28,15 @@ infra-down:
 
 infra-logs:
 	docker-compose logs -f
+
+migration-up-chat:
+	docker-compose up --build migrator-chat
+
+migration-up-auth:
+	docker-compose up --build migrator-auth
+
+migration-down-chat:
+	@echo "Goose down not implemented in docker-compose setup yet, requires manual run or different script"
+
+migration-down-auth:
+	@echo "Goose down not implemented in docker-compose setup yet, requires manual run or different script"

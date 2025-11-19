@@ -4,6 +4,7 @@ volumes:
   postgres_auth_data:
   postgres_chat_data:
 
+
 services:
   postgres-auth:
     image: postgres:15-alpine
@@ -24,3 +25,19 @@ services:
       - "5433:5432"
     volumes:
       - postgres_chat_data:/var/lib/postgresql/data
+
+  migrator-chat:
+    build:
+      context: .
+      dockerfile: ./chat-server/migration.Dockerfile
+    restart: on-failure
+    environment:
+      DB_HOST: postgres-chat
+
+  migrator-auth:
+    build:
+      context: .
+      dockerfile: ./auth/migration.Dockerfile
+    restart: on-failure
+    environment:
+      DB_HOST: postgres-auth
