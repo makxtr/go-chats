@@ -74,8 +74,10 @@ echo "Setting up permissions..."
 echo "================================================"
 
 # Get Cloud Build service account
-BUILD_SA="${PROJECT_ID}@cloudbuild.gserviceaccount.com"
-COMPUTE_SA="$(gcloud iam service-accounts list --project=$PROJECT_ID --filter='displayName:Compute Engine default service account' --format='value(email)')"
+# Cloud Build uses the Project Number, not Project ID, for its default service account
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+BUILD_SA="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
+COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
 # Grant permissions to Cloud Build
 gcloud secrets add-iam-policy-binding auth-database-url \
