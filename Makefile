@@ -21,19 +21,19 @@ grpcui-chat-prod:
 	grpcui chat-service-rxpqkfxb3a-uc.a.run.app:443
 
 infra-up:
-	docker-compose up -d
+	docker compose up -d
 
 infra-down:
-	docker-compose down
+	docker compose down
 
 infra-logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 migration-up-chat:
-	docker-compose up --build migrator-chat
+	docker compose up --build migrator-chat
 
 migration-up-auth:
-	docker-compose up --build migrator-auth
+	docker compose up --build migrator-auth
 
 migration-down-chat:
 	@echo "Goose down not implemented in docker-compose setup yet, requires manual run or different script"

@@ -1,5 +1,23 @@
 # Cloud Build configuration for chat service
 steps:
+  # Run database migrations BEFORE deployment
+  - name: "alpine:3.18"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        # Install dependencies
+        apk add --no-cache wget postgresql-client
+
+        # Download goose
+        wget -O /workspace/goose https://github.com/pressly/goose/releases/download/v3.14.0/goose_linux_x86_64
+        chmod +x /workspace/goose
+
+        # Run migrations
+        cd chat-server/migrations
+        /workspace/goose postgres "$$CHAT_DATABASE_URL" up -v
+    secretEnv: ['CHAT_DATABASE_URL']
+
   # Build the Docker image
   - name: "gcr.io/cloud-builders/docker"
     args:
@@ -18,7 +36,7 @@ steps:
       - "--all-tags"
       - "us-central1-docker.pkg.dev/$PROJECT_ID/go-chats/chat-service"
 
-  # Deploy to Cloud Run
+  # Deploy to Cloud Run with database URL secret
   - name: "gcr.io/cloud-builders/gcloud"
     args:
       - "run"
@@ -29,6 +47,12 @@ steps:
       - "--platform=managed"
       - "--allow-unauthenticated"
       - "--use-http2"
+      - "--set-secrets=PG_DSN=chat-database-url:latest"
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/go-chats-478611/secrets/chat-database-url/versions/latest
+      env: 'CHAT_DATABASE_URL'
 
 # Store images in Artifact Registry
 images:

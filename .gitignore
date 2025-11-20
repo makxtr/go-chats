@@ -1,16 +1,10 @@
 .idea
-
-# Environment files (local.env and prod.env are templates, .env is for local use)
 .env
-
-# Logs
 *.log
-
-# Temporary files
 tmp/
-
-# Build artifacts
 bin/
-
-# Dependencies
 vendor/
+.vscode
+
+neon-credentials.txt
+cloud-sql-credentials.txt

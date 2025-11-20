@@ -33,6 +33,8 @@ services:
     restart: on-failure
     environment:
       DB_HOST: postgres-chat
+    depends_on:
+      - postgres-chat
 
   migrator-auth:
     build:
@@ -41,3 +43,5 @@ services:
     restart: on-failure
     environment:
       DB_HOST: postgres-auth
+    depends_on:
+      - postgres-auth
