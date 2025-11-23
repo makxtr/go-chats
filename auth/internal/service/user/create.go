@@ -40,6 +40,14 @@ func (s *serv) Create(ctx context.Context, command *model.CreateUserCommand) (in
 			return errTx
 		}
 
+		errTx = s.logRepository.Log(ctx, &model.UserLog{
+			Action:   "user_created",
+			EntityID: id,
+		})
+		if errTx != nil {
+			return errTx
+		}
+
 		return nil
 	})
 

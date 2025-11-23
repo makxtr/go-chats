@@ -1,11 +1,28 @@
 package user
 
 import (
+	"auth/internal/model"
 	"context"
 )
 
 func (s *serv) Delete(ctx context.Context, id int64) error {
-	err := s.userRepository.Delete(ctx, id)
+	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
+		errTx := s.userRepository.Delete(ctx, id)
+		if errTx != nil {
+			return errTx
+		}
+
+		errTx = s.logRepository.Log(ctx, &model.UserLog{
+			Action:   "user_deleted",
+			EntityID: id,
+		})
+		if errTx != nil {
+			return errTx
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return err
 	}

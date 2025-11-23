@@ -8,6 +8,7 @@ import (
 	"auth/internal/closer"
 	"auth/internal/config"
 	"auth/internal/repository"
+	logRepo "auth/internal/repository/log"
 	userRepository "auth/internal/repository/user"
 	"auth/internal/service"
 	userService "auth/internal/service/user"
@@ -22,6 +23,7 @@ type serviceProvider struct {
 	dbClient       db.Client
 	txManager      db.TxManager
 	userRepository repository.UserRepository
+	logRepository  repository.LogRepository
 
 	userService service.UserService
 
@@ -93,10 +95,19 @@ func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRep
 	return s.userRepository
 }
 
+func (s *serviceProvider) LogRepository(ctx context.Context) repository.LogRepository {
+	if s.logRepository == nil {
+		s.logRepository = logRepo.NewRepository(s.DBClient(ctx))
+	}
+
+	return s.logRepository
+}
+
 func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 	if s.userService == nil {
 		s.userService = userService.NewService(
 			s.UserRepository(ctx),
+			s.LogRepository(ctx),
 			s.TxManager(ctx),
 		)
 	}

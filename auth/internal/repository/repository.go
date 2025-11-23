@@ -11,3 +11,7 @@ type UserRepository interface {
 	Delete(ctx context.Context, id int64) error
 	Update(ctx context.Context, id int64, updateUser *model.UpdateUserData) error
 }
+
+type LogRepository interface {
+	Log(ctx context.Context, userLog *model.UserLog) error
+}
