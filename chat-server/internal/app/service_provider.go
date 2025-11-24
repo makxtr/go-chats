@@ -9,6 +9,7 @@ import (
 	"chat-server/internal/config"
 	"chat-server/internal/repository"
 	chatRepository "chat-server/internal/repository/chat"
+	logRepository "chat-server/internal/repository/log"
 	"chat-server/internal/service"
 	chatService "chat-server/internal/service/chat"
 	"context"
@@ -23,6 +24,7 @@ type serviceProvider struct {
 	txManager db.TxManager
 
 	chatRepository repository.ChatRepository
+	logRepository  repository.LogRepository
 
 	chatService service.ChatService
 
@@ -95,10 +97,19 @@ func (s *serviceProvider) ChatRepository(ctx context.Context) repository.ChatRep
 	return s.chatRepository
 }
 
+func (s *serviceProvider) LogRepository(ctx context.Context) repository.LogRepository {
+	if s.logRepository == nil {
+		s.logRepository = logRepository.NewRepository(s.DBClient(ctx))
+	}
+
+	return s.logRepository
+}
+
 func (s *serviceProvider) ChatService(ctx context.Context) service.ChatService {
 	if s.chatService == nil {
 		s.chatService = chatService.NewService(
 			s.ChatRepository(ctx),
+			s.LogRepository(ctx),
 			s.TxManager(ctx),
 		)
 	}

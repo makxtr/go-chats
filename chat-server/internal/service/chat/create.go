@@ -14,6 +14,14 @@ func (s *serv) Create(ctx context.Context, chat *model.Chat) (int64, error) {
 			return errTx
 		}
 
+		errTx = s.logRepository.Log(ctx, &model.ChatLog{
+			Action:   "chat_created",
+			EntityID: id,
+		})
+		if errTx != nil {
+			return errTx
+		}
+
 		return nil
 	})
 

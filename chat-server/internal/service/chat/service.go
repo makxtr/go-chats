@@ -8,15 +8,18 @@ import (
 
 type serv struct {
 	chatRepository repository.ChatRepository
+	logRepository  repository.LogRepository
 	txManager      db.TxManager
 }
 
 func NewService(
 	chatRepository repository.ChatRepository,
+	logRepository repository.LogRepository,
 	txManager db.TxManager,
 ) service.ChatService {
 	return &serv{
 		chatRepository: chatRepository,
+		logRepository:  logRepository,
 		txManager:      txManager,
 	}
 }
