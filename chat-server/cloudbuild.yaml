@@ -1,5 +1,25 @@
 # Cloud Build configuration for chat service
 steps:
+  # Run tests BEFORE everything else (blocks deployment if tests fail)
+  - name: "golang:1.21"
+    dir: "chat-server"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        echo "Running tests..."
+
+        # Install minimock
+        go install github.com/gojuno/minimock/v3/cmd/minimock@latest
+
+        # Generate mocks
+        make generate-mocks
+
+        # Run all tests
+        make test
+
+        echo "✅ All tests passed!"
+
   # Run database migrations BEFORE deployment
   - name: "alpine:3.18"
     entrypoint: "sh"

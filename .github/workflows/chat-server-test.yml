@@ -1,11 +1,6 @@
 name: Chat Server Tests
 
 on:
-  push:
-    branches: [ main, develop ]
-    paths:
-      - 'chat-server/**'
-      - '.github/workflows/chat-server-test.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
