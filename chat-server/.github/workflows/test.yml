@@ -1,0 +1,71 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Install minimock
+        run: go install github.com/gojuno/minimock/v3/cmd/minimock@latest
+
+      - name: Generate mocks
+        run: make generate-mocks
+
+      - name: Verify mocks are up to date
+        run: |
+          if ! git diff --exit-code internal/repository/mocks/; then
+            echo "❌ Mocks are outdated! Please run 'make generate-mocks' locally"
+            git diff internal/repository/mocks/
+            exit 1
+          fi
+
+      - name: Run tests
+        run: make test
+
+      - name: Run tests with race detector
+        run: go test -race -timeout 30s ./...
+
+  test-coverage:
+    name: Test coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Install minimock
+        run: go install github.com/gojuno/minimock/v3/cmd/minimock@latest
+
+      - name: Generate mocks
+        run: make generate-mocks
+
+      - name: Run tests with coverage
+        run: make test-coverage
+
+      - name: Upload coverage to Codecov (optional)
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.out
+          fail_ci_if_error: false
