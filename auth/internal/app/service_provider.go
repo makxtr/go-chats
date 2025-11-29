@@ -2,10 +2,6 @@ package app
 
 import (
 	"auth/internal/api/user"
-	"auth/internal/client/db"
-	"auth/internal/client/db/pg"
-	"auth/internal/client/db/transaction"
-	"auth/internal/closer"
 	"auth/internal/config"
 	"auth/internal/repository"
 	logRepo "auth/internal/repository/log"
@@ -14,6 +10,11 @@ import (
 	userService "auth/internal/service/user"
 	"context"
 	"log"
+
+	"github.com/makxtr/go-common/pkg/closer"
+	"github.com/makxtr/go-common/pkg/db"
+	"github.com/makxtr/go-common/pkg/db/pg"
+	"github.com/makxtr/go-common/pkg/db/transaction"
 )
 
 type serviceProvider struct {

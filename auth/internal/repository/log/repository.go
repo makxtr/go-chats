@@ -1,11 +1,12 @@
 package log
 
 import (
-	"auth/internal/client/db"
 	"auth/internal/model"
 	"auth/internal/repository"
 	"context"
 	"log"
+
+	"github.com/makxtr/go-common/pkg/db"
 
 	sq "github.com/Masterminds/squirrel"
 )

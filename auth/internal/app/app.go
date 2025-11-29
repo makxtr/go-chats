@@ -1,12 +1,13 @@
 package app
 
 import (
-	"auth/internal/closer"
 	"auth/internal/config"
 	desc "auth/pkg/user_v1"
 	"context"
 	"log"
 	"net"
+
+	"github.com/makxtr/go-common/pkg/closer"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

@@ -1,9 +1,10 @@
 package chat
 
 import (
-	"chat-server/internal/client/db"
 	"chat-server/internal/repository"
 	"chat-server/internal/service"
+
+	"github.com/makxtr/go-common/pkg/db"
 )
 
 type serv struct {

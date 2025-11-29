@@ -1,12 +1,13 @@
 package app
 
 import (
-	"chat-server/internal/closer"
 	"chat-server/internal/config"
 	desc "chat-server/pkg/chat_server_v1"
 	"context"
 	"log"
 	"net"
+
+	"github.com/makxtr/go-common/pkg/closer"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

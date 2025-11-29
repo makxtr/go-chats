@@ -1,7 +1,6 @@
 package user
 
 import (
-	"auth/internal/client/db"
 	"auth/internal/model"
 	"auth/internal/repository"
 	repoConverter "auth/internal/repository/user/converter"
@@ -9,6 +8,8 @@ import (
 	"context"
 	"log"
 	"time"
+
+	"github.com/makxtr/go-common/pkg/db"
 
 	sq "github.com/Masterminds/squirrel"
 )

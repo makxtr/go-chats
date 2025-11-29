@@ -1,9 +1,10 @@
 package user
 
 import (
-	"auth/internal/client/db"
 	"auth/internal/repository"
 	"auth/internal/service"
+
+	"github.com/makxtr/go-common/pkg/db"
 )
 
 type serv struct {

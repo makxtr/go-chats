@@ -1,11 +1,12 @@
 package log
 
 import (
-	"chat-server/internal/client/db"
 	"chat-server/internal/model"
 	"chat-server/internal/repository"
 	"context"
 	"log"
+
+	"github.com/makxtr/go-common/pkg/db"
 
 	sq "github.com/Masterminds/squirrel"
 )

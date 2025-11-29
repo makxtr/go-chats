@@ -2,10 +2,6 @@ package app
 
 import (
 	"chat-server/internal/api/chat"
-	"chat-server/internal/client/db"
-	"chat-server/internal/client/db/pg"
-	"chat-server/internal/client/db/transaction"
-	"chat-server/internal/closer"
 	"chat-server/internal/config"
 	"chat-server/internal/repository"
 	chatRepository "chat-server/internal/repository/chat"
@@ -14,6 +10,11 @@ import (
 	chatService "chat-server/internal/service/chat"
 	"context"
 	"log"
+
+	"github.com/makxtr/go-common/pkg/closer"
+	"github.com/makxtr/go-common/pkg/db"
+	"github.com/makxtr/go-common/pkg/db/pg"
+	"github.com/makxtr/go-common/pkg/db/transaction"
 )
 
 type serviceProvider struct {
