@@ -3,6 +3,8 @@ package repository
 import (
 	"chat-server/internal/model"
 	"context"
+
+	logModel "github.com/makxtr/go-common/pkg/logger/model"
 )
 
 type ChatRepository interface {
@@ -11,5 +13,5 @@ type ChatRepository interface {
 }
 
 type LogRepository interface {
-	Log(ctx context.Context, chatLog *model.ChatLog) error
+	Log(ctx context.Context, log *logModel.Log) error
 }

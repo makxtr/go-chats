@@ -1,8 +1,9 @@
 package user
 
 import (
-	"auth/internal/model"
 	"context"
+
+	logModel "github.com/makxtr/go-common/pkg/logger/model"
 )
 
 func (s *serv) Delete(ctx context.Context, id int64) error {
@@ -12,7 +13,7 @@ func (s *serv) Delete(ctx context.Context, id int64) error {
 			return errTx
 		}
 
-		errTx = s.logRepository.Log(ctx, &model.UserLog{
+		errTx = s.logRepository.Log(ctx, &logModel.Log{
 			Action:   "user_deleted",
 			EntityID: id,
 		})

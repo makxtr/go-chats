@@ -5,7 +5,6 @@ import (
 	"chat-server/internal/config"
 	"chat-server/internal/repository"
 	chatRepository "chat-server/internal/repository/chat"
-	logRepository "chat-server/internal/repository/log"
 	"chat-server/internal/service"
 	chatService "chat-server/internal/service/chat"
 	"context"
@@ -15,6 +14,7 @@ import (
 	"github.com/makxtr/go-common/pkg/db"
 	"github.com/makxtr/go-common/pkg/db/pg"
 	"github.com/makxtr/go-common/pkg/db/transaction"
+	"github.com/makxtr/go-common/pkg/logger"
 )
 
 type serviceProvider struct {
@@ -100,7 +100,7 @@ func (s *serviceProvider) ChatRepository(ctx context.Context) repository.ChatRep
 
 func (s *serviceProvider) LogRepository(ctx context.Context) repository.LogRepository {
 	if s.logRepository == nil {
-		s.logRepository = logRepository.NewRepository(s.DBClient(ctx))
+		s.logRepository = logger.NewRepository(s.DBClient(ctx), "chat_logs")
 	}
 
 	return s.logRepository

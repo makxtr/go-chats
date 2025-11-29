@@ -7,7 +7,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/golang/protobuf v1.5.4
 	github.com/joho/godotenv v1.5.1
-	github.com/makxtr/go-common v0.1.0
+	github.com/makxtr/go-common v0.2.0
 	github.com/pkg/errors v0.9.1
 	golang.org/x/crypto v0.45.0
 	google.golang.org/grpc v1.65.0

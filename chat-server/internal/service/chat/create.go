@@ -3,6 +3,8 @@ package chat
 import (
 	"chat-server/internal/model"
 	"context"
+
+	logModel "github.com/makxtr/go-common/pkg/logger/model"
 )
 
 func (s *serv) Create(ctx context.Context, chat *model.Chat) (int64, error) {
@@ -14,7 +16,7 @@ func (s *serv) Create(ctx context.Context, chat *model.Chat) (int64, error) {
 			return errTx
 		}
 
-		errTx = s.logRepository.Log(ctx, &model.ChatLog{
+		errTx = s.logRepository.Log(ctx, &logModel.Log{
 			Action:   "chat_created",
 			EntityID: id,
 		})

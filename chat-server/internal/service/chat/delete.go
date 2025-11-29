@@ -1,8 +1,9 @@
 package chat
 
 import (
-	"chat-server/internal/model"
 	"context"
+
+	logModel "github.com/makxtr/go-common/pkg/logger/model"
 
 	"github.com/pkg/errors"
 )
@@ -15,7 +16,7 @@ func (s *serv) Delete(ctx context.Context, id int64) error {
 			return errors.Wrap(errTx, "failed to delete chat from repository")
 		}
 
-		errTx = s.logRepository.Log(ctx, &model.ChatLog{
+		errTx = s.logRepository.Log(ctx, &logModel.Log{
 			Action:   "chat_deleted",
 			EntityID: id,
 		})

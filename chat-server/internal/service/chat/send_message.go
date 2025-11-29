@@ -4,6 +4,8 @@ import (
 	"chat-server/internal/model"
 	"context"
 	"log"
+
+	logModel "github.com/makxtr/go-common/pkg/logger/model"
 )
 
 func (s *serv) SendMessage(ctx context.Context, message *model.Message) error {
@@ -17,7 +19,7 @@ func (s *serv) SendMessage(ctx context.Context, message *model.Message) error {
 			message.Timestamp)
 		// Since the current API definition does not include a ChatID in SendMessageRequest,
 		// we cannot log a meaningful EntityID. We will use 0 for now.
-		errTx = s.logRepository.Log(ctx, &model.ChatLog{
+		errTx = s.logRepository.Log(ctx, &logModel.Log{
 			Action:   "message_sent",
 			EntityID: 0,
 		})

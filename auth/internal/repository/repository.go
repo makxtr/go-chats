@@ -3,6 +3,8 @@ package repository
 import (
 	"auth/internal/model"
 	"context"
+
+	logModel "github.com/makxtr/go-common/pkg/logger/model"
 )
 
 type UserRepository interface {
@@ -13,5 +15,5 @@ type UserRepository interface {
 }
 
 type LogRepository interface {
-	Log(ctx context.Context, userLog *model.UserLog) error
+	Log(ctx context.Context, log *logModel.Log) error
 }

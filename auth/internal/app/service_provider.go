@@ -4,7 +4,6 @@ import (
 	"auth/internal/api/user"
 	"auth/internal/config"
 	"auth/internal/repository"
-	logRepo "auth/internal/repository/log"
 	userRepository "auth/internal/repository/user"
 	"auth/internal/service"
 	userService "auth/internal/service/user"
@@ -15,6 +14,7 @@ import (
 	"github.com/makxtr/go-common/pkg/db"
 	"github.com/makxtr/go-common/pkg/db/pg"
 	"github.com/makxtr/go-common/pkg/db/transaction"
+	"github.com/makxtr/go-common/pkg/logger"
 )
 
 type serviceProvider struct {
@@ -98,7 +98,7 @@ func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRep
 
 func (s *serviceProvider) LogRepository(ctx context.Context) repository.LogRepository {
 	if s.logRepository == nil {
-		s.logRepository = logRepo.NewRepository(s.DBClient(ctx))
+		s.logRepository = logger.NewRepository(s.DBClient(ctx), "user_logs")
 	}
 
 	return s.logRepository

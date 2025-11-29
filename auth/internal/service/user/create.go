@@ -5,6 +5,8 @@ import (
 	"context"
 	"log"
 
+	logModel "github.com/makxtr/go-common/pkg/logger/model"
+
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -40,7 +42,7 @@ func (s *serv) Create(ctx context.Context, command *model.CreateUserCommand) (in
 			return errTx
 		}
 
-		errTx = s.logRepository.Log(ctx, &model.UserLog{
+		errTx = s.logRepository.Log(ctx, &logModel.Log{
 			Action:   "user_created",
 			EntityID: id,
 		})
