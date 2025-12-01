@@ -1,5 +1,27 @@
 # Cloud Build configuration for auth service
 steps:
+  # Run tests BEFORE everything else (blocks deployment if tests fail)
+  - name: "golang:1.24"
+    dir: "auth"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        set -e  # Exit on any error
+
+        echo "Running tests..."
+
+        # Install minimock
+        go install github.com/gojuno/minimock/v3/cmd/minimock@latest
+
+        # Generate mocks
+        make generate-mocks
+
+        # Run all tests
+        make test
+
+        echo "✅ All tests passed!"
+
   # Run database migrations BEFORE deployment
   - name: "alpine:3.18"
     entrypoint: "sh"

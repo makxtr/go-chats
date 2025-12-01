@@ -44,3 +44,36 @@ local-migration-up:
 
 local-migration-down:
 	$(LOCAL_BIN)/goose -dir ${LOCAL_MIGRATION_DIR} postgres "${LOCAL_MIGRATION_DSN}" down -v
+
+# Testing
+test:
+	go test -v -race -timeout 30s ./...
+
+test-coverage:
+	go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+	go tool cover -html=coverage.out -o coverage.html
+
+test-api:
+	go test -v -race ./internal/api/...
+
+# Mock generation
+generate-mocks:
+	go generate ./internal/repository/...
+
+# CI/CD commands
+ci-test: generate-mocks
+	@echo "Running tests for CI..."
+	go test -race -timeout 30s ./...
+
+ci-lint:
+	@echo "Running linters..."
+	golangci-lint run ./...
+
+# Verify mocks are up to date
+verify-mocks: generate-mocks
+	@if ! git diff --exit-code internal/repository/mocks/; then \
+		echo "❌ Mocks are outdated! Run 'make generate-mocks'"; \
+		exit 1; \
+	else \
+		echo "✅ Mocks are up to date"; \
+	fi
