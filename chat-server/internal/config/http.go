@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	httpHostEnvName = "HTTP_HOST"
-	httpPortEnvName = "HTTP_PORT"
+	httpHostEnvName  = "HTTP_HOST"
+	httpPortEnvName  = "HTTP_PORT"
+	cloudPortEnvName = "PORT"
 )
 
 type HTTPConfig interface {
@@ -27,9 +28,12 @@ func NewHTTPConfig() (HTTPConfig, error) {
 		return nil, errors.New("http host not found")
 	}
 
-	port := os.Getenv(httpPortEnvName)
+	port := os.Getenv(cloudPortEnvName)
 	if len(port) == 0 {
-		return nil, errors.New("http port not found")
+		port = os.Getenv(httpPortEnvName)
+		if len(port) == 0 {
+			return nil, errors.New("http port not found")
+		}
 	}
 
 	return &httpConfig{

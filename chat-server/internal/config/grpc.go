@@ -28,12 +28,9 @@ func NewGRPCConfig() (GRPCConfig, error) {
 		return nil, errors.New("grpc host not found")
 	}
 
-	port := os.Getenv(cloudPortEnvName)
+	port := os.Getenv(grpcPortEnvName)
 	if len(port) == 0 {
-		port = os.Getenv(grpcPortEnvName)
-		if len(port) == 0 {
-			return nil, errors.New("grpc port not found")
-		}
+		return nil, errors.New("grpc port not found")
 	}
 
 	return &grpcConfig{
