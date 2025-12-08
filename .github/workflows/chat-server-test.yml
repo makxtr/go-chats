@@ -32,6 +32,14 @@ jobs:
           version: '25.x'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Cache vendor.protogen
+        uses: actions/cache@v4
+        with:
+          path: chat-server/vendor.protogen
+          key: protogen-${{ hashFiles('chat-server/Makefile') }}
+          restore-keys: |
+            protogen-
+
       - name: Install proto dependencies
         run: |
           make vendor-proto
