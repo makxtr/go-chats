@@ -14,6 +14,7 @@ const (
 
 type GRPCConfig interface {
 	Address() string
+	DialAddress() string
 }
 
 type grpcConfig struct {
@@ -40,4 +41,10 @@ func NewGRPCConfig() (GRPCConfig, error) {
 
 func (cfg *grpcConfig) Address() string {
 	return net.JoinHostPort(cfg.host, cfg.port)
+}
+
+// DialAddress returns the address for connecting to the gRPC server
+// Always uses 127.0.0.1 for local connections (within the same container)
+func (cfg *grpcConfig) DialAddress() string {
+	return net.JoinHostPort("127.0.0.1", cfg.port)
 }

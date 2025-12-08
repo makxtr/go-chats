@@ -121,7 +121,9 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	err := desc.RegisterChatServerV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
+	// Use DialAddress() for connecting to local gRPC server (127.0.0.1)
+	// Address() is used for binding the server (can be 0.0.0.0)
+	err := desc.RegisterChatServerV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().DialAddress(), opts)
 	if err != nil {
 		return err
 	}
