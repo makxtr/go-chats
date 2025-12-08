@@ -26,6 +26,28 @@ jobs:
           cache: true
           cache-dependency-path: chat-server/go.sum
 
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: '25.x'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install proto dependencies
+        run: |
+          make vendor-proto
+          make install-deps
+
+      - name: Generate proto files
+        run: make generate-chat-server-api
+
+      - name: Verify proto files are up to date
+        run: |
+          if ! git diff --exit-code pkg/chat_server_v1/; then
+            echo "❌ Proto files are outdated! Please run 'make generate-chat-server-api' locally"
+            git diff pkg/chat_server_v1/
+            exit 1
+          fi
+
       - name: Install minimock
         run: go install github.com/gojuno/minimock/v3/cmd/minimock@latest
 

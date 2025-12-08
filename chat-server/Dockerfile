@@ -26,8 +26,9 @@ COPY --from=builder /app/server .
 # Copy production env file
 COPY prod.env .
 
-# Expose the gRPC port
+# Expose gRPC and HTTP ports
 EXPOSE 50052
+EXPOSE 8080
 
 # Run the server with prod.env by default
 CMD ["./server", "-config-path=prod.env"]

@@ -4,12 +4,13 @@ LOCAL_BIN:=$(CURDIR)/bin
 LOCAL_MIGRATION_DIR=$(MIGRATION_DIR)
 LOCAL_MIGRATION_DSN=$(PG_DSN)
 
-.PHONY: help install-deps get-deps generate-chat-server-api run build docker-build docker-run test test-coverage test-api generate-mocks ci-test ci-lint verify-mocks
+.PHONY: help install-deps get-deps generate-chat-server-api run build docker-build docker-run test test-coverage test-api generate-mocks ci-test ci-lint verify-mocks verify-proto
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
 	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.14.0
+	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.20.0
 
 get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
@@ -17,12 +18,28 @@ get-deps:
 
 generate-chat-server-api:
 	mkdir -p pkg/chat_server_v1
-	protoc --proto_path api/chat_server_v1 \
+	protoc --proto_path api/chat_server_v1 --proto_path vendor.protogen \
 	--go_out=pkg/chat_server_v1 --go_opt=paths=source_relative \
 	--plugin=protoc-gen-go=bin/protoc-gen-go \
 	--go-grpc_out=pkg/chat_server_v1 --go-grpc_opt=paths=source_relative \
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
+	--grpc-gateway_out=pkg/chat_server_v1 --grpc-gateway_opt=paths=source_relative \
+	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
 	api/chat_server_v1/chat_server.proto
+
+vendor-proto:
+	@if [ ! -d vendor.protogen/validate ]; then \
+		mkdir -p vendor.protogen/validate &&\
+		git clone https://github.com/envoyproxy/protoc-gen-validate vendor.protogen/protoc-gen-validate &&\
+		mv vendor.protogen/protoc-gen-validate/validate/*.proto vendor.protogen/validate &&\
+		rm -rf vendor.protogen/protoc-gen-validate ;\
+	fi
+	@if [ ! -d vendor.protogen/google ]; then \
+		git clone https://github.com/googleapis/googleapis vendor.protogen/googleapis &&\
+		mkdir -p  vendor.protogen/google/ &&\
+		mv vendor.protogen/googleapis/google/api vendor.protogen/google &&\
+		rm -rf vendor.protogen/googleapis ;\
+	fi
 
 run:
 	go run cmd/server/main.go
@@ -69,11 +86,21 @@ ci-lint:
 	@echo "Running linters..."
 	golangci-lint run ./...
 
-# Verify mocks are up to date
 verify-mocks: generate-mocks
 	@if ! git diff --exit-code internal/repository/mocks/; then \
-		echo "❌ Mocks are outdated! Run 'make generate-mocks'"; \
+		echo "Mocks are outdated! Run 'make generate-mocks'"; \
 		exit 1; \
 	else \
-		echo "✅ Mocks are up to date"; \
+		echo "Mocks are up to date"; \
 	fi
+
+verify-proto: generate-chat-server-api
+	@if ! git diff --exit-code pkg/chat_server_v1/; then \
+		echo "Proto files are outdated! Run 'make generate-chat-server-api' and commit changes"; \
+		exit 1; \
+	else \
+		echo "Proto files are up to date"; \
+	fi
+
+generate:
+	make generate-chat-server-api 

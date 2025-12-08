@@ -8,3 +8,4 @@ vendor/
 
 neon-credentials.txt
 cloud-sql-credentials.txt
+go-chats.code-workspace
