@@ -11,6 +11,7 @@ install-deps:
 	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.14.0
 	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.20.0
+	GOBIN=$(LOCAL_BIN) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4
 
 get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
@@ -25,6 +26,8 @@ generate-chat-server-api:
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
 	--grpc-gateway_out=pkg/chat_server_v1 --grpc-gateway_opt=paths=source_relative \
 	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
+	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
+	--validate_out=lang=go:pkg/chat_server_v1 --validate_opt=paths=source_relative \
 	api/chat_server_v1/chat_server.proto
 
 vendor-proto:

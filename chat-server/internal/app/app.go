@@ -2,6 +2,7 @@ package app
 
 import (
 	"chat-server/internal/config"
+	"chat-server/internal/interceptor"
 	desc "chat-server/pkg/chat_server_v1"
 	"context"
 	"log"
@@ -101,7 +102,10 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(interceptor.ValidateInterceptor),
+	)
 
 	reflection.Register(a.grpcServer)
 

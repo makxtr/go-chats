@@ -9,6 +9,10 @@ import (
 )
 
 func (i *Implementation) SendMessage(ctx context.Context, req *desc.SendMessageRequest) (*emptypb.Empty, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	err := i.chatService.SendMessage(ctx, converter.ToMessageFromDesc(req))
 	if err != nil {
 		return nil, err
