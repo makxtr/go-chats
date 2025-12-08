@@ -12,13 +12,14 @@ install-deps:
 	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.14.0
 	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.20.0
 	GOBIN=$(LOCAL_BIN) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4
+	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.20.0
+	GOBIN=$(LOCAL_BIN) go install github.com/rakyll/statik@v0.1.7
 
 get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 generate-chat-server-api:
-	mkdir -p pkg/chat_server_v1
 	protoc --proto_path api/chat_server_v1 --proto_path vendor.protogen \
 	--go_out=pkg/chat_server_v1 --go_opt=paths=source_relative \
 	--plugin=protoc-gen-go=bin/protoc-gen-go \
@@ -28,6 +29,8 @@ generate-chat-server-api:
 	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
 	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
 	--validate_out=lang=go:pkg/chat_server_v1 --validate_opt=paths=source_relative \
+	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
+    --plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
 	api/chat_server_v1/chat_server.proto
 
 vendor-proto:
@@ -43,6 +46,12 @@ vendor-proto:
 		mv vendor.protogen/googleapis/google/api vendor.protogen/google &&\
 		rm -rf vendor.protogen/googleapis ;\
 	fi
+	@if [ ! -d vendor.protogen/protoc-gen-openapiv2 ]; then \
+    	mkdir -p vendor.protogen/protoc-gen-openapiv2/options &&\
+    	git clone https://github.com/grpc-ecosystem/grpc-gateway vendor.protogen/openapiv2 &&\
+    	mv vendor.protogen/openapiv2/protoc-gen-openapiv2/options/*.proto vendor.protogen/protoc-gen-openapiv2/options &&\
+    	rm -rf vendor.protogen/openapiv2 ;\
+    fi
 
 run:
 	go run cmd/server/main.go
@@ -106,4 +115,7 @@ verify-proto: generate-chat-server-api
 	fi
 
 generate:
-	make generate-chat-server-api 
+	mkdir -p pkg/chat_server_v1
+	mkdir -p pkg/swagger
+	make generate-chat-server-api
+	$(LOCAL_BIN)/statik -src=pkg/swagger/ -include='*.css,*.html,*.js,*.json,*.png'

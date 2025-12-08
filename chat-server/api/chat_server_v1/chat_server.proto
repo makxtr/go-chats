@@ -6,10 +6,25 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";
 import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "pkg/chat_server_v1;chat_server_v1";
 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Chat API"
+    version: "1.0.0"
+  };
+
+  host: "localhost:8080",
+  schemes: HTTP,
+  schemes: HTTPS,
+  consumes: "application/json",
+  produces: "application/json",
+};
+
 service ChatServerV1 {
+  // Create new chat
   rpc Create(CreateRequest) returns (CreateResponse) {
     option (google.api.http) = {
       post: "/chat/v1/create"
