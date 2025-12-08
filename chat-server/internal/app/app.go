@@ -123,7 +123,10 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 
 	// Use DialAddress() for connecting to local gRPC server (127.0.0.1)
 	// Address() is used for binding the server (can be 0.0.0.0)
-	err := desc.RegisterChatServerV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().DialAddress(), opts)
+
+	grpcInternalAddr := "127.0.0.1" + ":" + "50052"
+
+	err := desc.RegisterChatServerV1HandlerFromEndpoint(ctx, mux, grpcInternalAddr, opts)
 	if err != nil {
 		return err
 	}
