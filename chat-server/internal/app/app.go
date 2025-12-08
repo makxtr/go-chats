@@ -12,7 +12,8 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/makxtr/go-common/pkg/closer"
-
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -135,9 +136,13 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	// 	AllowCredentials: true,
 	// })
 
+	// Wrap mux with h2c to support both HTTP/1.1 and HTTP/2
+	// This allows handling REST API (HTTP/1.1) and gRPC (HTTP/2) on the same port
+	h2cHandler := h2c.NewHandler(mux, &http2.Server{})
+
 	a.httpServer = &http.Server{
 		Addr:    a.serviceProvider.HTTPConfig().Address(),
-		Handler: mux,
+		Handler: h2cHandler,
 	}
 
 	return nil
