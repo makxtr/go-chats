@@ -21,3 +21,10 @@ func ToUserInfoFromRepo(info modelRepo.UserInfo) model.UserInfo {
 		Role:  model.Role(info.Role),
 	}
 }
+
+func ToUserSecureFromRepo(user *modelRepo.UserSecure) *model.UserSecure {
+	return &model.UserSecure{
+		Password: user.Password,
+		Role:     model.Role(user.Role),
+	}
+}

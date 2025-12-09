@@ -19,6 +19,11 @@ type UserInfo struct {
 	Role  Role
 }
 
+type UserSecure struct {
+	Password string
+	Role     Role
+}
+
 type CreateUserCommand struct {
 	Info            UserInfo
 	Password        string

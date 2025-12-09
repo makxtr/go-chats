@@ -1,11 +1,13 @@
 package app
 
 import (
+	"auth/internal/api/auth"
 	"auth/internal/api/user"
 	"auth/internal/config"
 	"auth/internal/repository"
 	userRepository "auth/internal/repository/user"
 	"auth/internal/service"
+	authService "auth/internal/service/auth"
 	userService "auth/internal/service/user"
 	"context"
 	"log"
@@ -18,8 +20,9 @@ import (
 )
 
 type serviceProvider struct {
-	pgConfig   config.PGConfig
-	grpcConfig config.GRPCConfig
+	pgConfig       config.PGConfig
+	grpcConfig     config.GRPCConfig
+	securityConfig config.SecurityConfig
 
 	dbClient       db.Client
 	txManager      db.TxManager
@@ -27,8 +30,11 @@ type serviceProvider struct {
 	logRepository  repository.LogRepository
 
 	userService service.UserService
+	authService service.AuthService
 
 	userImpl *user.Implementation
+
+	authImpl *auth.Implementation
 }
 
 func newServiceProvider() *serviceProvider {
@@ -59,6 +65,19 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	}
 
 	return s.grpcConfig
+}
+
+func (s *serviceProvider) SecurityConfig() config.SecurityConfig {
+	if s.securityConfig == nil {
+		cfg, err := config.NewSecurityConfig()
+		if err != nil {
+			log.Fatalf("failed to get security config: %s", err.Error())
+		}
+
+		s.securityConfig = cfg
+	}
+
+	return s.securityConfig
 }
 
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
@@ -104,6 +123,19 @@ func (s *serviceProvider) LogRepository(ctx context.Context) repository.LogRepos
 	return s.logRepository
 }
 
+func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
+	if s.authService == nil {
+		s.authService = authService.NewService(
+			s.UserRepository(ctx),
+			s.LogRepository(ctx),
+			s.TxManager(ctx),
+			s.SecurityConfig(),
+		)
+	}
+
+	return s.authService
+}
+
 func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 	if s.userService == nil {
 		s.userService = userService.NewService(
@@ -122,4 +154,12 @@ func (s *serviceProvider) UserImpl(ctx context.Context) *user.Implementation {
 	}
 
 	return s.userImpl
+}
+
+func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.Implementation {
+	if s.authImpl == nil {
+		s.authImpl = auth.NewImplementation(s.AuthService(ctx))
+	}
+
+	return s.authImpl
 }

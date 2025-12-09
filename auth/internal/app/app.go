@@ -2,7 +2,8 @@ package app
 
 import (
 	"auth/internal/config"
-	desc "auth/pkg/user_v1"
+	descAuth "auth/pkg/auth_v1"
+	descUser "auth/pkg/user_v1"
 	"context"
 	"log"
 	"net"
@@ -77,7 +78,8 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	desc.RegisterUserV1Server(a.grpcServer, a.serviceProvider.UserImpl(ctx))
+	descUser.RegisterUserV1Server(a.grpcServer, a.serviceProvider.UserImpl(ctx))
+	descAuth.RegisterAuthV1Server(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
 
 	return nil
 }

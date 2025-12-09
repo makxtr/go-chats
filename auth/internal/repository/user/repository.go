@@ -34,6 +34,32 @@ func NewRepository(db db.Client) repository.UserRepository {
 	return &repo{db: db}
 }
 
+func (r *repo) GetForLogin(ctx context.Context, name string) (*model.UserSecure, error) {
+	builder := sq.Select(passColumn, roleColumn).
+		PlaceholderFormat(sq.Dollar).
+		From(tableName).
+		Where(sq.Eq{nameColumn: name}).
+		Limit(1)
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, repository.ErrQueryBuild
+	}
+
+	q := db.Query{
+		Name:     "user_repository.GetForLogin",
+		QueryRaw: query,
+	}
+
+	var user modelRepo.UserSecure
+	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&user.Password, &user.Role)
+	if err != nil {
+		return nil, err
+	}
+
+	return repoConverter.ToUserSecureFromRepo(&user), nil
+}
+
 func (r *repo) Create(ctx context.Context, createUser *model.CreateUserData) (int64, error) {
 	builder := sq.Insert(tableName).
 		PlaceholderFormat(sq.Dollar).

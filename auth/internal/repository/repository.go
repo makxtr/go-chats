@@ -12,6 +12,7 @@ type UserRepository interface {
 	Get(ctx context.Context, id int64) (*model.User, error)
 	Delete(ctx context.Context, id int64) error
 	Update(ctx context.Context, id int64, updateUser *model.UpdateUserData) error
+	GetForLogin(ctx context.Context, name string) (*model.UserSecure, error)
 }
 
 type LogRepository interface {

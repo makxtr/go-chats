@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.18.0
 	github.com/gojuno/minimock/v3 v3.4.7
 	github.com/golang/protobuf v1.5.4

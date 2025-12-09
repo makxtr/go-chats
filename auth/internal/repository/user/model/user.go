@@ -12,6 +12,11 @@ type User struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
+type UserSecure struct {
+	Password string `db:"password"`
+	Role     Role   `db:"role"`
+}
+
 type UserInfo struct {
 	Name  string `db:"name"`
 	Email string `db:"email"`
