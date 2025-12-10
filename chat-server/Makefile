@@ -4,7 +4,7 @@ LOCAL_BIN:=$(CURDIR)/bin
 LOCAL_MIGRATION_DIR=$(MIGRATION_DIR)
 LOCAL_MIGRATION_DSN=$(PG_DSN)
 
-.PHONY: help install-deps get-deps generate-chat-server-api run build docker-build docker-run test test-coverage test-api generate-mocks ci-test ci-lint verify-mocks verify-proto
+.PHONY: help install-deps get-deps generate-chat-server-api generate-access-api run build docker-build docker-run test test-coverage test-api generate-mocks ci-test ci-lint verify-mocks verify-proto
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
@@ -32,6 +32,15 @@ generate-chat-server-api:
 	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
     --plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
 	api/chat_server_v1/chat_server.proto
+
+generate-access-api:
+	mkdir -p pkg/access_v1
+	protoc --proto_path api/access_v1 --proto_path vendor.protogen \
+	--go_out=pkg/access_v1 --go_opt=paths=source_relative \
+	--plugin=protoc-gen-go=bin/protoc-gen-go \
+	--go-grpc_out=pkg/access_v1 --go-grpc_opt=paths=source_relative \
+	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
+	api/access_v1/access.proto
 
 vendor-proto:
 	@if [ ! -d vendor.protogen/validate ]; then \

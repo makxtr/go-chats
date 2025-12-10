@@ -118,9 +118,21 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
+	// Создаем auth interceptor
+	authInterceptor, err := interceptor.NewAuthInterceptor(
+		a.serviceProvider.AuthConfig().Address(),
+	)
+	if err != nil {
+		return err
+	}
+
+	// Цепочка interceptors: сначала auth, потом validate
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
-		grpc.UnaryInterceptor(interceptor.ValidateInterceptor),
+		grpc.ChainUnaryInterceptor(
+			authInterceptor.Unary(),
+			interceptor.ValidateInterceptor,
+		),
 	)
 
 	reflection.Register(a.grpcServer)

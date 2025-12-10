@@ -22,6 +22,7 @@ type serviceProvider struct {
 	grpcConfig    config.GRPCConfig
 	httpConfig    config.HTTPConfig
 	swaggerConfig config.SwaggerConfig
+	authConfig    config.AuthConfig
 
 	dbClient  db.Client
 	txManager db.TxManager
@@ -144,6 +145,19 @@ func (s *serviceProvider) ChatService(ctx context.Context) service.ChatService {
 	}
 
 	return s.chatService
+}
+
+func (s *serviceProvider) AuthConfig() config.AuthConfig {
+	if s.authConfig == nil {
+		cfg, err := config.NewAuthConfig()
+		if err != nil {
+			log.Fatalf("failed to get auth config: %s", err.Error())
+		}
+
+		s.authConfig = cfg
+	}
+
+	return s.authConfig
 }
 
 func (s *serviceProvider) ChatImpl(ctx context.Context) *chat.Implementation {
