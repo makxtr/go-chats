@@ -1,12 +1,14 @@
 package app
 
 import (
+	"auth/internal/api/access"
 	"auth/internal/api/auth"
 	"auth/internal/api/user"
 	"auth/internal/config"
 	"auth/internal/repository"
 	userRepository "auth/internal/repository/user"
 	"auth/internal/service"
+	accessService "auth/internal/service/access"
 	authService "auth/internal/service/auth"
 	userService "auth/internal/service/user"
 	"context"
@@ -29,12 +31,13 @@ type serviceProvider struct {
 	userRepository repository.UserRepository
 	logRepository  repository.LogRepository
 
-	userService service.UserService
-	authService service.AuthService
+	userService   service.UserService
+	authService   service.AuthService
+	accessService service.AccessService
 
-	userImpl *user.Implementation
-
-	authImpl *auth.Implementation
+	userImpl   *user.Implementation
+	authImpl   *auth.Implementation
+	accessImpl *access.Implementation
 }
 
 func newServiceProvider() *serviceProvider {
@@ -123,6 +126,16 @@ func (s *serviceProvider) LogRepository(ctx context.Context) repository.LogRepos
 	return s.logRepository
 }
 
+func (s *serviceProvider) AccessService(ctx context.Context) service.AccessService {
+	if s.accessService == nil {
+		s.accessService = accessService.NewService(
+			s.SecurityConfig(),
+		)
+	}
+
+	return s.accessService
+}
+
 func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 	if s.authService == nil {
 		s.authService = authService.NewService(
@@ -154,6 +167,14 @@ func (s *serviceProvider) UserImpl(ctx context.Context) *user.Implementation {
 	}
 
 	return s.userImpl
+}
+
+func (s *serviceProvider) AccessImpl(ctx context.Context) *access.Implementation {
+	if s.accessImpl == nil {
+		s.accessImpl = access.NewImplementation(s.AccessService(ctx))
+	}
+
+	return s.accessImpl
 }
 
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.Implementation {

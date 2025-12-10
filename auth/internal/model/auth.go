@@ -3,7 +3,7 @@ package model
 import "github.com/dgrijalva/jwt-go"
 
 const (
-	ExamplePath = "/note_v1.NoteV1/Get"
+	ExamplePath = "/chat_server_v1.ChatServerV1/SendMessage"
 )
 
 type UserClaims struct {

@@ -14,4 +14,9 @@ type UserService interface {
 
 type AuthService interface {
 	Login(ctx context.Context, command *model.LoginUserCommand) (string, error)
+	GetAccessToken(ctx context.Context, refreshToken string) (string, error)
+}
+
+type AccessService interface {
+	Check(ctx context.Context, accessToken, endPoint string) (bool, error)
 }

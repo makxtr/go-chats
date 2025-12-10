@@ -17,6 +17,8 @@ func mapError(err error) error {
 		return status.Error(codes.Internal, "invalid credentials provided")
 	case errors.Is(err, auth.LoginFailed):
 		return status.Error(codes.Unauthenticated, "failed to login user")
+	case errors.Is(err, auth.RefreshTokenInvalid):
+		return status.Error(codes.Unauthenticated, "refresh token is invalid or expired")
 	default:
 		return status.Error(codes.Internal, err.Error())
 	}

@@ -2,11 +2,17 @@ package utils
 
 import (
 	"auth/internal/model"
+	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/metadata"
 )
+
+const authPrefix = "Bearer "
 
 func GenerateToken(info model.UserInfo, secretKey []byte, duration time.Duration) (string, error) {
 	claims := model.UserClaims{
@@ -45,4 +51,24 @@ func VerifyToken(tokenStr string, secretKey []byte) (*model.UserClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func GetTokenFromCtx(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", ErrNoMetadata
+	}
+
+	authHeader, ok := md["authorization"]
+	if !ok || len(authHeader) == 0 {
+		return "", ErrNoHeader
+	}
+
+	if !strings.HasPrefix(authHeader[0], authPrefix) {
+		return "", fmt.Errorf("%w: header value was '%s'", ErrInvalidFormat, authHeader[0])
+	}
+
+	accessToken := strings.TrimPrefix(authHeader[0], authPrefix)
+
+	return accessToken, nil
 }
