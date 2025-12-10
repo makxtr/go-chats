@@ -15,5 +15,5 @@ func (i *Implementation) Login(ctx context.Context, req *desc.LoginRequest) (*de
 
 	log.Printf("login user with username: %s", req.Username)
 
-	return &desc.LoginResponse{RefreshToken: token.Token}, nil
+	return &desc.LoginResponse{RefreshToken: token}, nil
 }

@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-func (s *serv) Login(ctx context.Context, command *model.LoginUserCommand) (*model.RefreshToken, error) {
+func (s *serv) Login(ctx context.Context, command *model.LoginUserCommand) (string, error) {
 	userSecure, err := s.userRepository.GetForLogin(ctx, command.Username)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	if !utils.VerifyPassword(userSecure.Password, command.Password) {
-		return nil, LoginFailed
+		return "", LoginFailed
 	}
 
 	refreshToken, err := utils.GenerateToken(model.UserInfo{
@@ -24,8 +24,8 @@ func (s *serv) Login(ctx context.Context, command *model.LoginUserCommand) (*mod
 		time.Duration(s.securityConfig.RefreshExp())*time.Minute,
 	)
 	if err != nil {
-		return nil, TokenGenFailed
+		return "", TokenGenFailed
 	}
 
-	return &model.RefreshToken{Token: refreshToken}, nil
+	return refreshToken, nil
 }

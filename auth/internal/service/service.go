@@ -13,5 +13,5 @@ type UserService interface {
 }
 
 type AuthService interface {
-	Login(ctx context.Context, command *model.LoginUserCommand) (*model.RefreshToken, error)
+	Login(ctx context.Context, command *model.LoginUserCommand) (string, error)
 }
