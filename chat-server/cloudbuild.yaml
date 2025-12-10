@@ -69,6 +69,7 @@ steps:
       - "--platform=managed"
       - "--allow-unauthenticated"
       - "--port=8080"
+      - "--use-http2"
       - "--set-secrets=PG_DSN=chat-database-url:latest"
 
 availableSecrets:
