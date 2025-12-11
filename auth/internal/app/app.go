@@ -2,6 +2,8 @@ package app
 
 import (
 	"auth/internal/config"
+	"auth/internal/interceptor"
+	"auth/internal/logger"
 	descAccess "auth/pkg/access_v1"
 	descAuth "auth/pkg/auth_v1"
 	descUser "auth/pkg/user_v1"
@@ -46,6 +48,7 @@ func (a *App) initDeps(ctx context.Context, configPath string) error {
 		func(ctx context.Context) error {
 			return a.initConfig(ctx, configPath)
 		},
+		a.initLogger,
 		a.initServiceProvider,
 		a.initGRPCServer,
 	}
@@ -69,13 +72,26 @@ func (a *App) initConfig(_ context.Context, configPath string) error {
 	return nil
 }
 
+func (a *App) initLogger(_ context.Context) error {
+	loggerConfig, err := config.NewLoggerConfig()
+	if err != nil {
+		return err
+	}
+
+	logger.Init(loggerConfig.IsDev(), loggerConfig.Level())
+	return nil
+}
+
 func (a *App) initServiceProvider(_ context.Context) error {
 	a.serviceProvider = newServiceProvider()
 	return nil
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(interceptor.LogInterceptor),
+	)
 
 	reflection.Register(a.grpcServer)
 

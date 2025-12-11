@@ -5,15 +5,17 @@ import (
 	"chat-server/internal/interceptor"
 	desc "chat-server/pkg/chat_server_v1"
 	"context"
-	"github.com/rakyll/statik/fs"
-	"github.com/rs/cors"
 	"io"
 	"log"
 	"net"
 	"net/http"
 	"sync"
 
+	"github.com/rakyll/statik/fs"
+	"github.com/rs/cors"
+
 	_ "chat-server/statik"
+
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/makxtr/go-common/pkg/closer"
 	"golang.org/x/net/http2"
@@ -118,7 +120,6 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	// Создаем auth interceptor
 	authInterceptor, err := interceptor.NewAuthInterceptor(
 		a.serviceProvider.AuthConfig().Address(),
 	)
@@ -126,7 +127,6 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 		return err
 	}
 
-	// Цепочка interceptors: сначала auth, потом validate
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
 		grpc.ChainUnaryInterceptor(
